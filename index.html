@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Veille Technologique - Angular et Java</title>
+    <style>
+        :root {
+            --primary: #3f51b5;
+            --secondary: #f50057;
+            --dark: #303030;
+            --light: #f5f5f5;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --danger: #f44336;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --offset: 40px;
+            --offest2 : 250px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), #673ab7);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .container {
+            /* max-width: 1200px; */
+            width: calc(100% - var(--offest));
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        nav {
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-list {
+            display: flex;
+            list-style: none;
+            overflow-x: auto;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .nav-item {
+            padding: 1rem 1.5rem;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .nav-item:hover {
+            background-color: rgba(63, 81, 181, 0.1);
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        section {
+            margin: 3rem 0;
+        }
+        
+        .section-title {
+            border-left: 5px solid var(--primary);
+            padding-left: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 16px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-badge {
+            background-color: white;
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .card-content {
+            padding: 1.5rem;
+        }
+        
+        .card-footer {
+            padding: 1rem 1.5rem;
+            background-color: rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .tag {
+            padding: 0.3rem 0.6rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            background-color: rgba(63, 81, 181, 0.1);
+            color: var(--primary);
+        }
+        
+        .tag.positive {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+        }
+        
+        .tag.negative {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+        }
+        
+        .tag.warning {
+            background-color: rgba(255, 152, 0, 0.1);
+            color: var(--warning);
+        }
+        
+        .evaluation-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .evaluation-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .evaluation-bar {
+            height: 24px;
+            background-color: #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .evaluation-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.8s ease-in-out;
+        }
+        
+        .evaluation-fill.high {
+            background-color: var(--success);
+            width: 90%;
+        }
+        
+        .evaluation-fill.medium-high {
+            background-color: #8bc34a;
+            width: 75%;
+        }
+        
+        .evaluation-fill.medium {
+            background-color: var(--warning);
+            width: 60%;
+        }
+        
+        .evaluation-fill.medium-low {
+            background-color: #ff5722;
+            width: 40%;
+        }
+        
+        .evaluation-fill.low {
+            background-color: var(--danger);
+            width: 25%;
+        }
+        
+        .evaluation-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        
+        .pros-cons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-direction: column;
+        }
+        
+        .pros, .cons {
+            flex: 1;
+        }
+        
+        .pros h4, .cons h4 {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .pros h4:before {
+            content: "+";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .cons h4:before {
+            content: "–";
+            position: absolute;
+            left: 0;
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .pros ul, .cons ul {
+            padding-left: 1.5rem;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #555;
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .source-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 1rem;
+        }
+        
+        .source-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .source-item:last-child {
+            border-bottom: none;
+        }
+        
+        .source-link {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .source-link:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background-color: white;
+            box-shadow: var(--card-shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: rgba(0,0,0,0.02);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-good {
+            background-color: var(--success);
+        }
+        
+        .status-ok {
+            background-color: var(--warning);
+        }
+        
+        .status-poor {
+            background-color: var(--danger);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--dark);
+            color: white;
+            margin-top: 3rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .pros-cons {
+                flex-direction: column;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+    <style>
+        nav{
+            position: fixed;
+            top: 0;
+            height: 100vh;
+            width: 80px;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        nav:hover{
+            width: fit-content;
+        }
+
+        nav:hover + .container{
+            margin-left: var(--offest2);
+            margin-right: 20px;
+            width: calc(100% - var(--offest2));
+        }
+
+        nav ul {
+            flex-direction: column;
+        }
+
+        .container{
+            margin: 0;
+            margin-left: calc(var(--offset) * 2);
+            margin-right: var(--offset);
+        }
+        i{
+            font-size: xx-large;
+            margin-right: 12px;
+            font-size: 38px;
+            margin-right: 26px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">   -->
+</head>
+<body>
+    <header>
+        <h1>Dashboard de Veille Technologique</h1>
+        <p>Angular et Java - Frameworks, Librairies et Paradigmes</p>
+        <p>Dernière mise à jour : 08 avril 2025</p>
+    </header>
+    
+    <nav>
+        <ul class="nav-list">
+            <a class="nav-item" href="#"><i class="bi bi-speedometer"></i>Introduction</a>
+            <a class="nav-item" href="#angular-test"><i class="bi bi-tools"></i>Tests Angular</a>
+            <a class="nav-item" href="#java-test"><i class="bi bi-tools"></i>Tests Java</a>
+            <a class="nav-item" href="#angular-ui"><i class="bi bi-paint-bucket"></i>UI Angular</a>
+            <a class="nav-item" href="#angular-paradigms"><i class="bi bi-braces-asterisk"></i>Paradigmes Angular</a>
+            <a class="nav-item" href="#java-paradigms"><i class="bi bi-braces-asterisk"></i>Paradigmes Java</a>
+            <a class="nav-item" href="#recommendations"><i class="bi bi-check-square"></i>Recommandations</a>
+        </ul>
+    </nav>
+
+    <main class="container" >
+        <section id="intro">
+            <h2 class="section-title">Introduction</h2>
+            <p>Ce dashboard présente les résultats d'une veille technologique réalisée pour Gen-Z Web, concernant les technologies Angular et Java. Cette recherche se concentre sur trois aspects essentiels :</p>
+            <ul style="margin-left: 22px;">
+                <li>Les librairies de test</li>
+                <li>Les librairies de composants visuels (UI)</li>
+                <li>Les paradigmes de programmation</li>
+            </ul>
+            <br>
+            <div class="card">
+                <div class="card-content">
+                    <p>Cette veille technologique a été réalisée en consultant diverses sources, notamment :</p>
+                    <ul>
+                        <li>Documentation officielle des frameworks</li>
+                        <li>Articles spécialisés (Baeldung, DZone, Medium, Dev.to)</li>
+                        <li>Enquêtes communautaires (StackOverflow, Reddit)</li>
+                        <li>Blogs d'experts reconnus</li>
+                        <li>Publications techniques récentes (2023-2024)</li>
+                    </ul>
+                    <p>Les analyses qualitatives présentées reflètent l'état actuel de l'écosystème Angular et Java, avec une attention particulière aux tendances émergentes et aux recommandations pour les projets futurs.</p>
+                </div>
+            </div>
+            
+            <h3 class="section-title" style="margin-top: 2rem;">Matrice de Comparaison</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Technologie</th>
+                        <th>Adoption</th>
+                        <th>Maturité</th>
+                        <th>Documentation</th>
+                        <th>Tendance</th>
+                        <th>Recommandation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Jest</strong></td>
+                        <td><span class="status-indicator status-good"></span>Forte</td>
+                        <td><span class="status-indicator status-good"></span>Élevée</td>
+                        <td><span class="status-indicator status-good"></span>Complète</td>
+                        <td>↗️ En croissance</td>
+                        <td>✅ Recommandé</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Jasmine</strong></td>
+                        <td><span class="status-indicator status-good"></span>Forte</td>
+                        <td><span class="status-indicator status-good"></span>Élevée</td>
+                        <td><span class="status-indicator status-good"></span>Complète</td>
+                        <td>➡️ Stable</td>
+                        <td>✅ Viable</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cypress</strong></td>
+                        <td><span class="status-indicator status-good"></span>Forte</td>
+                        <td><span class="status-indicator status-ok"></span>Moyenne</td>
+                        <td><span class="status-indicator status-good"></span>Complète</td>
+                        <td>↗️ En croissance</td>
+                        <td>✅ Recommandé</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Protractor</strong></td>
+                        <td><span class="status-indicator status-poor"></span>Faible</td>
+                        <td><span class="status-indicator status-ok"></span>Moyenne</td>
+                        <td><span class="status-indicator status-poor"></span>Limitée</td>
+                        <td>↘️ En déclin</td>
+                        <td>❌ Déconseillé</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JUnit 5</strong></td>
+                        <td><span class="status-indicator status-good"></span>Forte</td>
+                        <td><span class="status-indicator status-good"></span>Élevée</td>
+                        <td><span class="status-indicator status-good"></span>Complète</td>
+                        <td>➡️ Stable</td>
+                        <td>✅ Recommandé</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Angular Material</strong></td>
+                        <td><span class="status-indicator status-good"></span>Forte</td>
+                        <td><span class="status-indicator status-good"></span>Élevée</td>
+                        <td><span class="status-indicator status-good"></span>Complète</td>
+                        <td>➡️ Stable</td>
+                        <td>✅ Recommandé</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section id="angular-test">
+            <h2 class="section-title">Librairies de Test pour Angular</h2>
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Jasmine</h3>
+                        <span class="card-badge">Natif Angular</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Framework de test BDD (Behavior-Driven Development) pour JavaScript, intégré par défaut dans Angular.</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">BDD</span>
+                            <span class="tag positive">Intégration native</span>
+                            <span class="tag negative">Tests lents</span>
+                            <span class="tag">Angular CLI</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très simple</span>
+                            </div>
+                
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://dev.to/this-is-angular/migrate-from-jasmine-to-jest-and-testing-in-angular-286i">
+                                "Angular, by default, comes with Jasmine; it is a great testing framework. I spent one year and a half running and writing tests with Jasmine, it works, but the market is moving to Jest and Testing library."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Syntaxe intuitive et lisible</li>
+                                    <li>Intégration native dans Angular CLI</li>
+                                    <li>Supporte l'exécution asynchrone des tests</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Performance plus lente que Jest pour les grands projets</li>
+                                    <li>Configuration de mocks plus verbeuse</li>
+                                    <li>Moins adapté aux tests de snapshot</li>
+                                    <li>Absence de parallélisation native des tests</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/this-is-angular/migrate-from-jasmine-to-jest-and-testing-in-angular-286i" class="source-link" target="_blank">Migrating from Jasmine to Jest in Angular</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Jest</h3>
+                        <span class="card-badge">Tendance</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Framework de test développé par Facebook, de plus en plus populaire dans l'écosystème Angular.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Performance</span>
+                            <span class="tag positive">Snapshots</span>
+                            <span class="tag positive">Mocks simples</span>
+                            <span class="tag negative">Config supplémentaire</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">En forte hausse</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Simple</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quote">
+                            <a href="https://dev.to/this-is-angular/angular-testing-in-2023-past-present-and-future-j5m?">They forked Jasmine and improved it in terms of performance. Instead of a browser, Jest uses jsdom, an emulator providing a DOM with parts of the Web API that allows us to select and interact with the DOM itself.</a>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Excellentes performances (tests parallélisés)</li>
+                                    <li>Configuration minimale</li>
+                                    <li>Snapshots testing</li>
+                                    <li>Mocking simplifié</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Intégration avec Angular nécessite une configuration supplémentaire</li>
+                                    <li>Courbe d'apprentissage pour les équipes habituées à Jasmine</li>
+                                    <li>Parfois des problèmes de compatibilité avec certaines fonctionnalités Angular</li>
+                                    <li>Documentation moins ciblée pour l'écosystème Angular</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://timdeschryver.dev/blog/integrate-jest-into-an-angular-application-and-library" class="source-link" target="_blank">Jest pour Angular - Guide complet</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://dev.to/this-is-angular/angular-testing-in-2023-past-present-and-future-j5m?" class="source-link" target="_blank">Angular Testing in 2023 - Past, Present, and Future</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Cypress</h3>
+                        <span class="card-badge">Recommandé</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Framework moderne pour les tests end-to-end (E2E).</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">UI visuelle</span>
+                            <span class="tag positive">Fiabilité</span>
+                            <span class="tag negative">Ressources élevées</span>
+                            <span class="tag warning">Version premium</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très élevée</span>
+                            </div>
+                
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très simple</span>
+                            </div>
+                
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://dev.to/this-is-angular/protractor-is-dead-long-live-cypress-part-1-34l0">
+                                "Cypress is fast, reliable, and it has a rich ecosystem and great developer experience compared to Protractor."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Interface visuelle pour suivre l'exécution des tests</li>
+                                    <li>Time-travel et débogage facilité</li>
+                                    <li>Tests fiables avec attente automatique des éléments</li>
+                                    <li>Supporte désormais les tests de composants</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Exécution plus lente que les tests unitaires</li>
+                                    <li>Ne peut s'exécuter que dans un environnement Chromium</li>
+                                    <li>Ressources système plus importantes requises</li>
+                                    <li>Coût de la version premium pour fonctionnalités avancées</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/this-is-angular/protractor-is-dead-long-live-cypress-part-1-34l0" class="source-link" target="_blank">Protractor is dead, long live Cypress! - Part 1</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://blog.ninja-squad.com/2021/05/05/migrating-from-protractor-to-cypress/" class="source-link" target="_blank">Migrating from Protractor to Cypress (Ninja Squad)</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://testsigma.com/blog/cypress-vs-protractor/" class="source-link" target="_blank">Cypress vs Protractor | What are the differences?</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header" style="background-color: #f44336;">
+                        <h3>Protractor</h3>
+                        <span class="card-badge" style="color: #f44336;">Déprécié</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Outil de test E2E historiquement associé à Angular, désormais déprécié.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag negative">Déprécié</span>
+                            <span class="tag negative">Instable</span>
+                            <span class="tag negative">Complexe</span>
+                            <span class="tag warning">À migrer</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill low"></div>
+                                <span class="evaluation-text">En fort déclin</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill low"></div>
+                                <span class="evaluation-text">Complexe</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-low"></div>
+                                <span class="evaluation-text">Moyenne à faible</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quote">
+                            "Ne sera plus maintenu à partir d'Angular 15+. Recommandation officielle de migrer vers Cypress ou Playwright."
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Historiquement intégré à Angular</li>
+                                    <li>Nombreux exemples et ressources existantes</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Déprécié et ne recevra plus de mises à jour</li>
+                                    <li>Problèmes de stabilité avec les applications modernes</li>
+                                    <li>Complexité de configuration élevée</li>
+                                    <li>Tests souvent fragiles face aux changements d'interface</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://blog.angular.io/angular-v12-is-now-available-32ed51fbfd49" class="source-link" target="_blank">Annonce officielle Angular - Dépréciation de Protractor</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="java-test">
+            <h2 class="section-title">Librairies de Test pour Java</h2>
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>JUnit 5</h3>
+                        <span class="card-badge">Standard</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Framework de test standard pour Java, version modernisée.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Modulaire</span>
+                            <span class="tag positive">Tests paramétrés</span>
+                            <span class="tag positive">Extensions</span>
+                            <span class="tag warning">Migration complexe</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quote">
+                            <a href="https://dev.to/keploy/junit-vs-testng-a-comprehensive-comparison-46lk?">JUnit is ideal for simpler projects where ease of use and community support are key considerations. </a>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Architecture modulaire</li>
+                                    <li>Tests paramétrés améliorés</li>
+                                    <li>Extensions puissantes</li>
+                                    <li>Compatibilité avec JUnit 4</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Migration depuis JUnit 4 peut être complexe pour les grands projets</li>
+                                    <li>Besoin d'adopter un nouveau modèle mental pour exploiter pleinement les fonctionnalités</li>
+                                    <li>Documentation parfois dispersée entre différentes versions</li>
+                                    <li>Certaines fonctionnalités avancées ont une syntaxe verbeuse</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/keploy/junit-vs-testng-a-comprehensive-comparison-46lk?" class="source-link" target="_blank">JUnit vs TestNG: A Comprehensive Comparison</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Mockito</h3>
+                        <span class="card-badge">Complémentaire</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Bibliothèque de mock pour Java, essentielle en complément de JUnit.</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">API fluide</span>
+                            <span class="tag positive">Vérification fine</span>
+                            <span class="tag negative">Classes finales</span>
+                            <span class="tag warning">Débogage difficile</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très élevée</span>
+                            </div>
+                
+                            <span class="evaluation-label">Simpplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Simple</span>
+                            </div>
+                
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://www.baeldung.com/junit-vs-mockito">
+                                "Mockito est un framework qui complète JUnit. Il nous aide à tester des composants individuels en simulant des éléments qui, autrement, seraient très compliqués à instancier ou ne pourraient pas être créés du tout."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>API fluide et intuitive</li>
+                                    <li>Vérification fine des interactions</li>
+                                    <li>Intégration excellente avec JUnit 5</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Limité pour mocker des classes finales (amélioré dans les versions récentes mais toujours problématique)</li>
+                                    <li>Peut nécessiter des plugins supplémentaires pour certains cas d'usage</li>
+                                    <li>Débogage parfois difficile lorsque les mocks sont complexes</li>
+                                    <li>Moins performant avec les classes statiques</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/junit-vs-mockito" class="source-link" target="_blank">Baeldung - Différences entre JUnit et Mockito</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://stackoverflow.com/questions/38747779/mockito-what-is-it-and-how-is-it-different-from-junit" class="source-link" target="_blank">Stack Overflow - Différences entre JUnit et Mockito</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Selenium</h3>
+                        <span class="card-badge">E2E Testing</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Outil d'automatisation des navigateurs web pour les tests d'interface.</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">Multi-navigateurs</span>
+                            <span class="tag positive">Sélecteurs puissants</span>
+                            <span class="tag negative">Tests fragiles</span>
+                            <span class="tag negative">Exécution lente</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-low"></div>
+                                <span class="evaluation-text">Moyenne à faible</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://dev.to/mteheran/comparison-of-automation-frameworks-selenium-playwright-and-cypress-3h8i">
+                                Widely used, it supports multiple languages and browsers, ideal for end-to-end testing.
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Support multi-navigateurs</li>
+                                    <li>Sélecteurs puissants</li>
+                                    <li>Intégration avec Java et frameworks de test</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Tests souvent fragiles face aux changements d'interface</li>
+                                    <li>Temps d'exécution lent</li>
+                                    <li>Configuration complexe pour le déploiement CI/CD</li>
+                                    <li>Nécessite une gestion explicite des attentes (waits)</li>
+                                    <li>Maintenance coûteuse à long terme</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/mteheran/comparison-of-automation-frameworks-selenium-playwright-and-cypress-3h8i" class="source-link" target="_blank">Comparison of Automation Frameworks: Selenium, Playwright and Cypress</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://testgrid.io/blog/selenium-testing/" class="source-link" target="_blank">Selenium Testing: The Complete Step-by-Step Tutorial</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Cucumber</h3>
+                        <span class="card-badge">Framework BDD</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Framework de développement piloté par le comportement (BDD) permettant d'écrire des tests en langage naturel (Gherkin).</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">Langage naturel</span>
+                            <span class="tag positive">Documentation vivante</span>
+                            <span class="tag negative">Surcharge conceptuelle</span>
+                            <span class="tag warning">Maintenance lourde</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                
+                            <span class="evaluation-label">Simplicité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-low"></div>
+                                <span class="evaluation-text">Complexe</span>
+                            </div>
+                
+                            <span class="evaluation-label">Performance</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://qatts.com/blog/how-to-use-cucumber-framework-and-how-does-it-work">
+                                "Cucumber est un framework de BDD qui favorise la collaboration entre les parties prenantes et les développeurs en leur permettant d'écrire et de lire des tests dans un langage commun."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Tests lisibles par les non-développeurs</li>
+                                    <li>Documentation vivante des fonctionnalités</li>
+                                    <li>Intégration avec Java et Spring</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Surcharge conceptuelle pour les projets simples</li>
+                                    <li>Maintenance des scénarios peut devenir lourde</li>
+                                    <li>Risque de duplication entre différents scénarios</li>
+                                    <li>Nécessite une discipline d'équipe pour maintenir la cohérence</li>
+                                    <li>Courbe d'apprentissage pour la rédaction efficace des scénarios</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/cucumber-rest-api-testing" class="source-link" target="_blank">Baeldung - Framework de test Cucumber</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://qatts.com/blog/how-to-use-cucumber-framework-and-how-does-it-work" class="source-link" target="_blank">QATTS - Avantages et inconvénients du framework Cucumber</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://andreidobra.com/blog/cucumber-advantages-disadvantages" class="source-link" target="_blank">Andrei Dobra - Avantages et inconvénients de Cucumber BDD</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="angular-ui">
+            <h2 class="section-title">Librairies de Composants Visuels pour Angular</h2>
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Angular Material</h3>
+                        <span class="card-badge">Officiel</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Bibliothèque officielle de composants Material Design pour Angular.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Material Design</span>
+                            <span class="tag positive">Accessibilité</span>
+                            <span class="tag negative">Personnalisation limitée</span>
+                            <span class="tag warning">Bundle size important</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Documentation</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Variété de composants</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quote">
+                            <a href="https://dev.to/withtoms/top-5-angular-design-systems-component-libraries-3f7f?">Angular material design is the library to pick if you want the most well developed and supported library for Angular.</a>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Implémentation fidèle des spécifications Material Design</li>
+                                    <li>Développée et maintenue par l'équipe Angular</li>
+                                    <li>Composants accessibles et réactifs</li>
+                                    <li>Documentation complète</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Personnalisation visuelle limitée sans effort significatif</li>
+                                    <li>Style visuel "Google" très reconnaissable (manque d'originalité)</li>
+                                    <li>Bundle size important si tous les modules sont importés</li>
+                                    <li>Certains composants avancés manquants (tableaux complexes, éditeurs riches)</li>
+                                    <li>Mise en œuvre de thèmes personnalisés complexe</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/withtoms/top-5-angular-design-systems-component-libraries-3f7f?" class="source-link" target="_blank">Top 5 Angular Design Systems/ Component Libraries</a>
+                            </li> 
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>PrimeNG</h3>
+                        <span class="card-badge">Complet</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Suite complète de composants UI pour Angular avec plus de 80 composants.</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">Variété</span>
+                            <span class="tag positive">Thèmes</span>
+                            <span class="tag warning">Premium</span>
+                            <span class="tag negative">Bundle size</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                
+                            <span class="evaluation-label">Documentation</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Correcte</span>
+                            </div>
+                
+                            <span class="evaluation-label">Variété de composants</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://dev.to/kinginit/the-big-angular-ui-library-comparison-4ifp">
+                                "PrimeNG offre une vaste gamme de composants UI, ce qui en fait un choix populaire pour les développeurs Angular."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Grande variété de composants (tables, graphiques, UI avancée)</li>
+                                    <li>Thèmes personnalisables</li>
+                                    <li>Support premium disponible</li>
+                                    <li>Mises à jour fréquentes</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Certains composants avancés nécessitent une licence premium</li>
+                                    <li>Bundle size important</li>
+                                    <li>Qualité d'implémentation variable entre les composants</li>
+                                    <li>Style visuel parfois moins raffiné qu'Angular Material</li>
+                                    <li>Documentation parfois incomplète pour les scénarios complexes</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://dev.to/kinginit/the-big-angular-ui-library-comparison-4ifp" class="source-link" target="_blank">Dev.to - The Big Angular UI Library Comparison</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://dev.to/this-is-angular/effortless-theme-toggling-in-angular-17-standalone-apps-with-primeng-2h20" class="source-link" target="_blank">Dev.to - Effortless Theme Toggling in Angular 17 Standalone Apps with PrimeNG</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>NG-ZORRO</h3>
+                        <span class="card-badge">Alternatif</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Implémentation des composants Ant Design pour Angular.</p>
+                
+                        <div class="tag-container">
+                            <span class="tag positive">Design élégant</span>
+                            <span class="tag positive">Support i18n</span>
+                            <span class="tag negative">Documentation limitée</span>
+                            <span class="tag warning">Communauté restreinte</span>
+                        </div>
+                
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                
+                            <span class="evaluation-label">Documentation</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                
+                            <span class="evaluation-label">Variété de composants</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                        </div>
+                
+                        <div class="quote">
+                            <a href="https://uibakery.io/blog/top-angular-libraries">
+                                "NG-ZORRO est basé sur Ant Design, l'une des bibliothèques UI les plus populaires pour React, et partage ses principes et son esthétique de conception."
+                            </a>
+                        </div>
+                
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Design élégant et moderne</li>
+                                    <li>Plus de 60 composants</li>
+                                    <li>Support international et i18n</li>
+                                    <li>Forte orientation entreprise</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Moins connu dans la communauté occidentale</li>
+                                    <li>Documentation principalement en anglais et chinois</li>
+                                    <li>Courbe d'apprentissage plus importante que pour Angular Material</li>
+                                    <li>Composants parfois trop spécifiques au marché asiatique</li>
+                                    <li>Mise à jour parfois en décalage avec les dernières versions d'Angular</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://uibakery.io/blog/top-angular-libraries" class="source-link" target="_blank">UI Bakery - Top Angular Libraries</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- AJOUT HERE -->
+        <section id="angular-paradigms">
+            <h2 class="section-title">Paradigmes de Programmation pour Angular</h2>
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Reactive Programming (RxJS)</h3>
+                        <span class="card-badge">Essentiel</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Paradigme de programmation basé sur les flux de données asynchrones et la propagation du changement.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Asynchrone</span>
+                            <span class="tag positive">Composable</span>
+                            <span class="tag warning">Complexité</span>
+                            <span class="tag negative">Verbosité</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Très élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Gestion élégante des opérations asynchrones</li>
+                                    <li>Compositions d'opérateurs puissants</li>
+                                    <li>Propagation réactive des changements</li>
+                                    <li>Au cœur d'Angular (HttpClient, Forms, Router)</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Courbe d'apprentissage importante</li>
+                                    <li>Peut mener à du code verbeux</li>
+                                    <li>Risque de fuites mémoire sans unsubscribe</li>
+                                    <li>Difficulté à déboguer les flux complexes</li>
+                                    <li>Documentation parfois difficile à appréhender</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://angular.io/guide/rx-library" class="source-link" target="_blank">Angular.io - Guide RxJS</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.learnrxjs.io/" class="source-link" target="_blank">Learn RxJS</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>NgRx (Redux Pattern)</h3>
+                        <span class="card-badge">Tendance</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Implémentation du pattern Redux pour Angular, basée sur un store global pour la gestion d'état.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">État prévisible</span>
+                            <span class="tag positive">Débogage</span>
+                            <span class="tag negative">Boilerplate</span>
+                            <span class="tag warning">Complexité</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-low"></div>
+                                <span class="evaluation-text">Moyenne à faible</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>État global prévisible (store unique)</li>
+                                    <li>Flux de données unidirectionnel</li>
+                                    <li>Outils de débogage excellents</li>
+                                    <li>Séparation claire des préoccupations</li>
+                                    <li>Idéal pour les applications complexes</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Quantité importante de code "boilerplate"</li>
+                                    <li>Courbe d'apprentissage significative</li>
+                                    <li>Peut sembler excessif pour de petites applications</li>
+                                    <li>Nécessite un changement de mentalité pour les équipes</li>
+                                    <li>Performance potentiellement impactée sans optimisation</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://blog.angular-university.io/angular-ngrx-store-and-effects-crash-course/" class="source-link" target="_blank">Angular University - NgRx Course</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Signals</h3>
+                        <span class="card-badge">Nouveau</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Nouveau système de réactivité introduit dans Angular 16+, inspiré de SolidJS et Vue.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Performances</span>
+                            <span class="tag positive">Simplicité</span>
+                            <span class="tag warning">Récent</span>
+                            <span class="tag warning">Écosystème limité</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">En croissance</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>API simple et intuitive</li>
+                                    <li>Meilleures performances que RxJS pour des cas simples</li>
+                                    <li>Réactivité fine et granulaire</li>
+                                    <li>Intégré nativement dans Angular 16+</li>
+                                    <li>Plus léger que NgRx</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Relativement nouveau, écosystème limité</li>
+                                    <li>Documentation encore en développement</li>
+                                    <li>Moins flexible que RxJS pour certains cas complexes</li>
+                                    <li>Patterns d'utilisation encore en évolution</li>
+                                    <li>Nécessite souvent une combinaison avec RxJS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://blog.angular.dev/latest-updates-to-effect-in-angular-f2d2648defcd" class="source-link" target="_blank">Blog Angular - Latest updates to effect() in Angular</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://angular.dev/guide/signals" class="source-link" target="_blank">Angular.dev - What are signals?</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+            
+        <section id="java-paradigms">
+            <h2 class="section-title">Paradigmes de Programmation pour Java</h2>
+            <div class="card-container">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Reactive Programming (Project Reactor)</h3>
+                        <span class="card-badge">Tendance</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Paradigme réactif pour Java, implémenté via Project Reactor et utilisé dans Spring WebFlux.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Non-blocking</span>
+                            <span class="tag positive">Haute performance</span>
+                            <span class="tag negative">Complexité</span>
+                            <span class="tag warning">Débogage difficile</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-low"></div>
+                                <span class="evaluation-text">Moyenne à faible</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>E/S non bloquantes</li>
+                                    <li>Haute performance sous charge</li>
+                                    <li>Opérateurs puissants (similaires à RxJS)</li>
+                                    <li>Backpressure intégré</li>
+                                    <li>Intégration native avec Spring WebFlux</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Courbe d'apprentissage importante</li>
+                                    <li>Débogage complexe</li>
+                                    <li>Verbosité pour certains cas d'utilisation</li>
+                                    <li>Moins adapté aux applications CRUD simples</li>
+                                    <li>Exige une maîtrise des concepts réactifs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/reactor-core" class="source-link" target="_blank">Baeldung - Introduction à Project Reactor</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://developer.oracle.com/learn/technical-articles/project-reactor-java" class="source-link" target="_blank">Oracle Developer - Project Reactor</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Domain-Driven Design (DDD)</h3>
+                        <span class="card-badge">Structurant</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Approche de conception centrée sur le domaine métier, applicable aux applications Java complexes.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Domaine explicite</span>
+                            <span class="tag positive">Modèle riche</span>
+                            <span class="tag negative">Effort initial</span>
+                            <span class="tag warning">Complexité</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Alignement code-métier</li>
+                                    <li>Modèles riches et expressifs</li>
+                                    <li>Excellente maintenabilité à long terme</li>
+                                    <li>Domaines bien délimités (bounded contexts)</li>
+                                    <li>Facilite la collaboration avec les experts métier</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Effort initial important</li>
+                                    <li>Complexité accrue pour les petits projets</li>
+                                    <li>Nécessite une compréhension approfondie du domaine</li>
+                                    <li>Courbe d'apprentissage significative</li>
+                                    <li>Peut paraître lourd pour les CRUD simples</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://www.domainlanguage.com/ddd/" class="source-link" target="_blank">Site officiel - Domain Language</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/ddd-in-java" class="source-link" target="_blank">Baeldung - DDD en Java</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://martinfowler.com/bliki/DomainDrivenDesign.html" class="source-link" target="_blank">Martin Fowler - DDD</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Functional Programming</h3>
+                        <span class="card-badge">Émergent</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Paradigme basé sur les fonctions pures et l'immutabilité, renforcé en Java depuis Java 8+.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Prédictibilité</span>
+                            <span class="tag positive">Composabilité</span>
+                            <span class="tag warning">Syntaxe verbeuse</span>
+                            <span class="tag warning">Limites de Java</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Bonne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Code plus concis et expressif</li>
+                                    <li>Meilleure testabilité</li>
+                                    <li>Parallélisation facilitée</li>
+                                    <li>Réduction des bugs liés aux états mutables</li>
+                                    <li>Popularisé par les Streams et Optional</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Syntaxe parfois verbeuse en Java</li>
+                                    <li>Limité par rapport aux langages fonctionnels purs</li>
+                                    <li>Performance impactée par l'immutabilité</li>
+                                    <li>Intégration parfois délicate avec les frameworks orientés objet</li>
+                                    <li>Manque de structures de données persistantes efficaces</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://www.vavr.io/" class="source-link" target="_blank">Vavr - Bibliothèque fonctionnelle pour Java</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/java-functional-programming" class="source-link" target="_blank">Baeldung - Java Functional Programming</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Clean Architecture</h3>
+                        <span class="card-badge">Structurant</span>
+                    </div>
+                    <div class="card-content">
+                        <p>Architecture en couches favorisant l'indépendance du domaine et la testabilité.</p>
+                        
+                        <div class="tag-container">
+                            <span class="tag positive">Découplage</span>
+                            <span class="tag positive">Testabilité</span>
+                            <span class="tag warning">Verbosité</span>
+                            <span class="tag warning">Complexité initiale</span>
+                        </div>
+                        
+                        <div class="evaluation-grid">
+                            <span class="evaluation-label">Adoption</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium-high"></div>
+                                <span class="evaluation-text">Élevée</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Productivité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill medium"></div>
+                                <span class="evaluation-text">Moyenne</span>
+                            </div>
+                            
+                            <span class="evaluation-label">Maintenabilité</span>
+                            <div class="evaluation-bar">
+                                <div class="evaluation-fill high"></div>
+                                <span class="evaluation-text">Excellente</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pros-cons">
+                            <div class="pros">
+                                <h4>Points forts</h4>
+                                <ul>
+                                    <li>Indépendance des frameworks</li>
+                                    <li>Excellente testabilité</li>
+                                    <li>Séparation claire des préoccupations</li>
+                                    <li>Adaptabilité aux changements</li>
+                                    <li>Domaine métier au centre de l'architecture</li>
+                                </ul>
+                            </div>
+                            <div class="cons">
+                                <h4>Inconvénients</h4>
+                                <ul>
+                                    <li>Verbosité (nombreuses interfaces et mappeurs)</li>
+                                    <li>Investissement initial important</li>
+                                    <li>Peut paraître excessif pour des applications simples</li>
+                                    <li>Risque de sur-ingénierie</li>
+                                    <li>Courbe d'apprentissage pour les nouveaux développeurs</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <h4>Sources</h4>
+                        <ul class="source-list">
+                            <li class="source-item">
+                                <a href="https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html" class="source-link" target="_blank">Uncle Bob - The Clean Architecture</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://spring.io/blog/2023/06/19/spring-boot-clean-architecture" class="source-link" target="_blank">Spring Boot avec Clean Architecture</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.baeldung.com/spring-boot-clean-architecture" class="source-link" target="_blank">Baeldung - Clean Architecture avec Spring Boot</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+            
+        <section id="recommendations">
+            <h2 class="section-title">Recommandations pour Gen-Z Web</h2>
+            
+            <div class="card">
+                <div class="card-header" style="background-color: #4caf50;">
+                    <h3>Synthèse des Recommandations</h3>
+                    <span class="card-badge" style="color: #4caf50;">Priorités</span>
+                </div>
+                <div class="card-content">
+                    <p>Basé sur notre veille technologique, voici les recommandations pour optimiser le développement des applications Angular et Java chez Gen-Z Web :</p>
+                    
+                    <h4 style="margin-top: 1.5rem;">Pour les Tests Angular</h4>
+                    <ul>
+                        <li><strong>Jest</strong> comme framework principal de tests unitaires</li>
+                        <li><strong>Cypress</strong> pour les tests end-to-end</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 1.5rem;">Pour les Tests Java</h4>
+                    <ul>
+                        <li><strong>JUnit 5</strong> comme framework principal</li>
+                        <li><strong>Mockito</strong> pour les mocks et les tests d'intégration</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 1.5rem;">Pour les Composants UI Angular</h4>
+                    <ul>
+                        <li><strong>Angular Material</strong> comme bibliothèque principale pour sa cohérence et sa maintenance par l'équipe Angular</li>
+                        <li>Développement d'une <strong>bibliothèque interne de composants</strong> basée sur Angular Material pour uniformiser l'expérience utilisateur</li>
+                    </ul>                        
+                </div>
+            </div>
+        </section>
+        <section id="news-feed">
+            <h2 class="section-title">Flux RSS</h2>
+            <rssapp-wall id="_Y9flxgWKzwTZLy5Z"></rssapp-wall><script src="https://widget.rss.app/v1/wall.js" type="text/javascript" async></script>
+        </section>
+        <div class="footer-content">
+            <p>Dashboard de Veille Technologique - Gen-Z Web - 2025</p>
+            <p>Réalisé pour le projet OpenClassroom : Définissez les technologies et les paradigmes d'une application</p>
+        </div>
+    </main>
+    <footer>
+    </footer>
+</body>
+</html>
