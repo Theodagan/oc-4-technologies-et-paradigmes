@@ -296,6 +296,24 @@
             text-decoration: none;
             transition: color 0.3s;
         }
+
+        .source-link.video {
+            color: var(--primary);
+            color: red;
+        }
+
+        .source-link.video::before {
+            content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:svg='http://www.w3.org/2000/svg' width='22px' height='22px' viewBox='0 0 313.23315 216.02286' version='1.1' id='svg5' xml:space='preserve'%3E%3Cdefs id='defs2'/%3E%3Cg id='layer1' transform='translate(-54.079375,-5.2758072)'%3E%3Cpath d='m 210.53177,221.29866 c 0,0 98.12514,0 122.46443,-6.48069 13.70449,-3.6724 24.01093,-14.2575 27.62825,-27.32688 6.68807,-23.97854 6.68807,-74.41988 6.68807,-74.41988 0,0 0,-50.117297 -6.68807,-73.879819 C 357.00713,25.79798 346.70069,15.42887 332.9962,11.864515 308.65691,5.2758072 210.53177,5.2758072 210.53177,5.2758072 c 0,0 -97.9062,0 -122.135976,6.5887078 -13.485335,3.564355 -24.010529,13.933465 -27.847831,27.326876 -6.468588,23.762522 -6.468588,73.879819 -6.468588,73.879819 0,0 0,50.44134 6.468588,74.41988 3.837302,13.06938 14.362496,23.65448 27.847831,27.32688 24.229776,6.48069 122.135976,6.48069 122.135976,6.48069 z' fill='%23ff0033' id='path1412' style='stroke-width:0.0208149' clip-path='none'/%3E%3Cpath d='M 259.30109,113.28723 178.29251,67.382379 v 91.809711 z' fill='%23ffffff' id='path1414' style='stroke-width:0.0208149' clip-path='none'/%3E%3C/g%3E%3C/svg%3E");
+            padding-right: 8px;
+            position: relative;
+            top: 6px;
+        }
+
+        /* .source-link.source-link.video::after{
+            content: attr(data-watchtime);
+            color: black;
+            padding-left: 8px;
+        } */
         
         .source-link:hover {
             color: var(--secondary);
@@ -660,7 +678,7 @@
                                 <a href="https://timdeschryver.dev/blog/integrate-jest-into-an-angular-application-and-library" class="source-link" target="_blank">Jest pour Angular - Guide complet</a>
                             </li>
                             <li class="source-item">
-                                <a href="https://dev.to/this-is-angular/angular-testing-in-2023-past-present-and-future-j5m?" class="source-link" target="_blank">Angular Testing in 2023 - Past, Present, and Future</a>
+                                <a href="https://dev.to/this-is-angular/angular-testing-in-2023-past-present-and-future-j5m?" class="source-link video" target="_blank">Angular Testing in 2023 - Past, Present, and Future</a>
                             </li>
                         </ul>
                     </div>
@@ -732,7 +750,7 @@
                         <h4>Sources</h4>
                         <ul class="source-list">
                             <li class="source-item">
-                                <a href="https://dev.to/this-is-angular/protractor-is-dead-long-live-cypress-part-1-34l0" class="source-link" target="_blank">Protractor is dead, long live Cypress! - Part 1</a>
+                                <a href="https://dev.to/this-is-angular/protractor-is-dead-long-live-cypress-part-1-34l0" class="source-link video" target="_blank">Protractor is dead, long live Cypress! - Part 1</a>
                             </li>
                             <li class="source-item">
                                 <a href="https://blog.ninja-squad.com/2021/05/05/migrating-from-protractor-to-cypress/" class="source-link" target="_blank">Migrating from Protractor to Cypress (Ninja Squad)</a>
@@ -1108,7 +1126,7 @@
                                 <a href="https://qatts.com/blog/how-to-use-cucumber-framework-and-how-does-it-work" class="source-link" target="_blank">QATTS - Avantages et inconvénients du framework Cucumber</a>
                             </li>
                             <li class="source-item">
-                                <a href="https://andreidobra.com/blog/cucumber-advantages-disadvantages" class="source-link" target="_blank">Andrei Dobra - Avantages et inconvénients de Cucumber BDD</a>
+                                <a href="https://andreidobra.com/blog/cucumber-advantages-disadvantages" class="source-link video" target="_blank">Andrei Dobra - Avantages et inconvénients de Cucumber BDD</a>
                             </li>
                         </ul>
                     </div>
@@ -1411,6 +1429,9 @@
                             <li class="source-item">
                                 <a href="https://www.learnrxjs.io/" class="source-link" target="_blank">Learn RxJS</a>
                             </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=KSFPOIauEPU" class="source-link video" target="_blank" data-watchtime="34">Angular RxJS and Signals: Better Together</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1478,6 +1499,15 @@
                         <ul class="source-list">
                             <li class="source-item">
                                 <a href="https://blog.angular-university.io/angular-ngrx-store-and-effects-crash-course/" class="source-link" target="_blank">Angular University - NgRx Course</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=QyGEToBSYX4" class="source-link video" target="_blank" data-watchtime="42">SignalStore overview</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=PIbyYVSFbcw" class="source-link video" target="_blank" data-watchtime="23">The State of NgRx </a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=o5iHh6cBPsU" class="source-link video" target="_blank" data-watchtime="19">State Management at Scale w/NgRx</a>
                             </li>
                         </ul>
                     </div>
@@ -1549,6 +1579,12 @@
                             </li>
                             <li class="source-item">
                                 <a href="https://angular.dev/guide/signals" class="source-link" target="_blank">Angular.dev - What are signals?</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?app=desktop&v=Nkx569aAQg0" class="source-link video" target="_blank" data-watchtime="15">J’ai enfin compris à quoi servent les Signals dans Angular </a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=yUxgFGshAf8" class="source-link video" target="_blank" data-watchtime="8">Use Angular Signals with NgRx</a>
                             </li>
                         </ul>
                     </div>
@@ -1626,6 +1662,13 @@
                             <li class="source-item">
                                 <a href="https://developer.oracle.com/learn/technical-articles/project-reactor-java" class="source-link" target="_blank">Oracle Developer - Project Reactor</a>
                             </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=4WWtKChFk_0" class="source-link video" target="_blank" data-watchtime="50">Reactive Java Programming with Project Reactor</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=uQd_Z3xJFho" class="source-link video" target="_blank" data-watchtime="62">Reactive Programming. Light Talk #47</a>
+                            </li>
+
                         </ul>
                     </div>
                 </div>
@@ -1700,6 +1743,12 @@
                             <li class="source-item">
                                 <a href="https://martinfowler.com/bliki/DomainDrivenDesign.html" class="source-link" target="_blank">Martin Fowler - DDD</a>
                             </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=T9dhGyA90-I" class="source-link video" target="_blank" data-watchtime="45">Practical DDD - Transforming theories into guidelines</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=FG4UOoEJvBc" class="source-link video" target="_blank" data-watchtime="46">Accelerating Event-driven Architecture with Domain-driven Design</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -1770,6 +1819,9 @@
                             </li>
                             <li class="source-item">
                                 <a href="https://www.baeldung.com/java-functional-programming" class="source-link" target="_blank">Baeldung - Java Functional Programming</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=340mJ08LSiY&list=PLtxmKJT15Kz5MdJhf72LRvJ3Uls9LuD2s&index=2" class="source-link video" target="_blank" data-watchtime="27">Functional Programming in Java | Introduction and Lambdas</a>
                             </li>
                         </ul>
                     </div>
@@ -1844,6 +1896,9 @@
                             </li>
                             <li class="source-item">
                                 <a href="https://www.baeldung.com/spring-boot-clean-architecture" class="source-link" target="_blank">Baeldung - Clean Architecture avec Spring Boot</a>
+                            </li>
+                            <li class="source-item">
+                                <a href="https://www.youtube.com/watch?v=mbNzUkNjrnA" class="source-link video" target="_blank" data-watchtime="">Anatomy of a Spring Boot App with Clean Architecture by Steve Pember</a>
                             </li>
                         </ul>
                     </div>
